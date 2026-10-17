@@ -22,10 +22,15 @@ public class MatchesController : Controller
 
     // GET /Matches            -> all matches
     // GET /Matches?status=Scheduled -> filtered board
-    public async Task<IActionResult> Index(MatchStatus? status)
+    // GET /Matches?search=nacional  -> matches where home or away team name contains the text
+    public async Task<IActionResult> Index(MatchStatus? status, string? search)
     {
+        // Blank search means no search: keeps "search=" out of the generated links
+        search = string.IsNullOrWhiteSpace(search) ? null : search.Trim();
+
         ViewBag.CurrentStatus = status;
-        var board = await _matchService.GetBoardAsync(status);
+        ViewBag.CurrentSearch = search;
+        var board = await _matchService.GetBoardAsync(status, search);
         return View(board);
     }
 
